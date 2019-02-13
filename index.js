@@ -20,6 +20,8 @@
 const grid = [];
 const GRID_LENGTH = 3;
 let turn = 'X';
+let MoveX = null;
+let MoveY = null;
 
 function initializeGrid() {
     for (let colIdx = 0;colIdx < GRID_LENGTH; colIdx++) {
@@ -73,10 +75,86 @@ function renderMainGrid() {
 function onBoxClick() {
     var rowIdx = this.getAttribute("rowIdx");
     var colIdx = this.getAttribute("colIdx");
+
     let newValue = 1;
     grid[colIdx][rowIdx] = newValue;
     renderMainGrid();
     addClickHandlers();
+    playMove();
+    // checkGame(1) ? declareWinner(1) : (checkGame(2) ? declareWinner(2) : playMove())
+}
+
+function playMove() {
+    // console.log('grid', grid);
+    let tempGrid = [];
+    let stepToWin = null;
+    let stepToLoose = null;
+    let winningX, winningY;
+    for(let x=0; x<GRID_LENGTH; x++) {
+        tempGrid[x] = [...grid[x]]
+    }
+    stepToWin = checkMinStepsToWin(tempGrid, 2, 0);
+    // console.log('step to win', stepToWin)
+    if(stepToWin === 1) {
+        grid[MoveX][MoveY] = 2;
+    } else {
+        winningX = MoveX;
+        winningY = MoveY;
+        stepToLoose = checkMinStepsToWin(tempGrid, 1, 0);
+        if(stepToLoose === 1) {
+            grid[MoveX][MoveY] = 2;
+        } else if(stepToLoose < stepToWin) {
+            grid[MoveX][MoveY] = 2;
+        } else {
+            grid[winningX][winningY] = 2;
+        }
+
+    }
+    renderMainGrid();
+    addClickHandlers();
+}
+
+function checkMinStepsToWin(testGrid, player, steps) {
+    let tempGrid = []
+    let minSteps = GRID_LENGTH*GRID_LENGTH;;
+    let tempMinSteps = null;
+    for(let x=0; x<GRID_LENGTH; x++) {
+        tempGrid[x] = [...testGrid[x]]
+    }
+    if(checkGame(player,tempGrid)) {
+        return 0
+    }
+    for(let x=0; x<3; x++) {
+        for(let y=0; y<3; y++) {
+            if(tempGrid[x][y] === 0) {
+                mvoePossible = true;
+                tempGrid[x][y] = player;
+                tempMinSteps = checkMinStepsToWin(tempGrid, player, steps);
+                if(tempMinSteps < minSteps) {
+                    minSteps = tempMinSteps;
+                    MoveX = x;
+                    MoveY = y;
+                }
+                tempGrid[x][y] = 0;
+            }
+            if(minSteps === 0) {
+                break;
+            }
+        }
+        if(minSteps === 0) {
+            break;
+        }
+    }
+    return steps + minSteps + 1
+}
+
+
+function declareWinner(player) {
+    if(player === 1) {
+        alert('Congratulations you won!!');
+    } else {
+        alert('You lost!');
+    }
 }
 
 function addClickHandlers() {
@@ -84,6 +162,62 @@ function addClickHandlers() {
     for (var idx = 0; idx < boxes.length; idx++) {
         boxes[idx].addEventListener('click', onBoxClick, false);
     }
+}
+
+function checkGame(player, gridToCheck) {
+    let won = false;
+    // let gridToCheck = []
+    // for(let x=0; x<GRID_LENGTH; x++) {
+    //     gridToCheck[x] = [...gridTo[x]]
+    // }
+    for(let x=0; x<GRID_LENGTH; x++) {  // check horizontal
+        if(won) {
+            break;
+        }
+        won = true
+        for(let y=0; y<GRID_LENGTH; y++) {
+            if( gridToCheck[x][y] !== player ) {
+                won = false
+                break;
+            }
+        }
+    }
+    if(won) {
+        return true;
+    }
+    for(let x=0; x<GRID_LENGTH; x++) { // check vertical
+        if(won) {
+            break;
+        }
+        won = true
+        for(let y=0; y<GRID_LENGTH; y++) {
+            if( gridToCheck[y][x] !== player ) {
+                won = false
+                break;
+            }
+        }
+    }
+    if(won) {
+        return true;
+    }
+    won = true
+    for(let x=0; x<GRID_LENGTH; x++) { // check diagonal 1
+        if( gridToCheck[x][x] !== player ) {
+            won = false
+            break;
+        }
+    }
+    if(won) {
+        return true;
+    }
+    won = true
+    for(let x=0; x<GRID_LENGTH; x++) { // check diagonal 1
+        if( gridToCheck[x][GRID_LENGTH-x] !== player ) {
+            won = false
+            break;
+        }
+    }
+    return won;
 }
 
 initializeGrid();
