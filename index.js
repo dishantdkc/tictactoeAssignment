@@ -120,24 +120,29 @@ function playMove() {
 }
 
 function checkMinStepsToWin(testGrid, player, steps) {
+    let moveXTemp = null;
+    let moveYTemp = null;
     let tempGrid = []
     let minSteps = GRID_LENGTH*GRID_LENGTH;;
     let tempMinSteps = null;
+    if(steps === GRID_LENGTH) {
+        return GRID_LENGTH;
+    }
     for(let x=0; x<GRID_LENGTH; x++) {
         tempGrid[x] = [...testGrid[x]]
     }
     if(checkGame(player,tempGrid)) {
-        return 0
+        return steps
     }
     for(let x=0; x<GRID_LENGTH; x++) {
         for(let y=0; y<GRID_LENGTH; y++) {
             if(tempGrid[x][y] === 0) {
                 tempGrid[x][y] = player;
-                tempMinSteps = checkMinStepsToWin(tempGrid, player, steps);
+                tempMinSteps = checkMinStepsToWin(tempGrid, player, steps + 1 );
                 if(tempMinSteps < minSteps) {
                     minSteps = tempMinSteps;
-                    MoveX = x;
-                    MoveY = y;
+                    moveXTemp = x;
+                    moveYTemp = y;
                 }
                 tempGrid[x][y] = 0;
             }
@@ -149,7 +154,9 @@ function checkMinStepsToWin(testGrid, player, steps) {
             break;
         }
     }
-    return steps + minSteps + 1
+    MoveX = moveXTemp;
+    MoveY = moveYTemp;
+    return minSteps;
 }
 
 
