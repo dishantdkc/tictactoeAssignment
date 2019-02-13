@@ -129,8 +129,8 @@ function checkMinStepsToWin(testGrid, player, steps) {
     if(checkGame(player,tempGrid)) {
         return 0
     }
-    for(let x=0; x<3; x++) {
-        for(let y=0; y<3; y++) {
+    for(let x=0; x<GRID_LENGTH; x++) {
+        for(let y=0; y<GRID_LENGTH; y++) {
             if(tempGrid[x][y] === 0) {
                 tempGrid[x][y] = player;
                 tempMinSteps = checkMinStepsToWin(tempGrid, player, steps);
@@ -176,54 +176,88 @@ function addClickHandlers() {
 
 function checkGame(player, gridToCheck = grid) {
     let won = false;
-    for(let x=0; x<GRID_LENGTH; x++) {  // check horizontal
-        if(won) {
+    let wonx = false;
+    let wony = false;
+    let wond1 = false;
+    let wond2 = false
+    for(let x=0; x<GRID_LENGTH; x++) {  // check all
+        if(wonx || wony || wond1 || wond2) {
             break;
         }
-        won = true
+        wonx = true;
+        wony = true;
+        if(x===0) {
+            wond1 = true;
+            wond2 = true;
+        }
         for(let y=0; y<GRID_LENGTH; y++) {
             if( gridToCheck[x][y] !== player ) {
-                won = false
-                break;
+                wonx = false
             }
-        }
-    }
-    if(won) {
-        return true;
-    }
-    for(let x=0; x<GRID_LENGTH; x++) { // check vertical
-        if(won) {
-            break;
-        }
-        won = true
-        for(let y=0; y<GRID_LENGTH; y++) {
             if( gridToCheck[y][x] !== player ) {
-                won = false
-                break;
+                wony = false
+            }
+            if(x===0 && gridToCheck[y][y] !== player ) {
+                wond1 = false
+            }
+            if(x===0 && gridToCheck[y][GRID_LENGTH-y-1] !== player ) {
+                wond2 = false
             }
         }
     }
-    if(won) {
+    if(wonx || wony || wond1 || wond2) {
         return true;
+    } else {
+        return false;
     }
-    won = true
-    for(let x=0; x<GRID_LENGTH; x++) { // check diagonal 1 top left to bottom right
-        if( gridToCheck[x][x] !== player ) {
-            won = false
-            break;
-        }
-    }
-    if(won) {
-        return true;
-    }
-    won = true
-    for(let x=0; x<GRID_LENGTH; x++) { // check diagonal 2 top right to bottom left
-        if( gridToCheck[x][GRID_LENGTH-x-1] !== player ) {
-            won = false
-            break;
-        }
-    }
-    return won;
+    // for(let x=0; x<GRID_LENGTH; x++) {  // check horizontal
+    //     if(won) {
+    //         break;
+    //     }
+    //     won = true
+    //     for(let y=0; y<GRID_LENGTH; y++) {
+    //         if( gridToCheck[x][y] !== player ) {
+    //             won = false
+    //             break;
+    //         }
+    //     }
+    // }
+    // if(won) {
+    //     return true;
+    // }
+    // for(let x=0; x<GRID_LENGTH; x++) { // check vertical
+    //     if(won) {
+    //         break;
+    //     }
+    //     won = true
+    //     for(let y=0; y<GRID_LENGTH; y++) {
+    //         if( gridToCheck[y][x] !== player ) {
+    //             won = false
+    //             break;
+    //         }
+    //     }
+    // }
+    // if(won) {
+    //     return true;
+    // }
+    // won = true
+    // for(let x=0; x<GRID_LENGTH; x++) { // check diagonal 1 top left to bottom right
+    //     if( gridToCheck[x][x] !== player ) {
+    //         won = false
+    //         break;
+    //     }
+    // }
+    // if(won) {
+    //     return true;
+    // }
+    // won = true
+    // for(let x=0; x<GRID_LENGTH; x++) { // check diagonal 2 top right to bottom left
+    //     if( gridToCheck[x][GRID_LENGTH-x-1] !== player ) {
+    //         won = false
+    //         break;
+    //     }
+    // }
+    // return won;
 }
 
 initializeGrid();
