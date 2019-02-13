@@ -151,11 +151,17 @@ function checkMinStepsToWin(testGrid, player, steps) {
 
 
 function declareWinner(player) {
-    if(player === 1) {
-        alert('Congratulations you won!!');
-    } else {
-        alert('You lost!');
-    }
+    setTimeout(()=>{
+        if(player === 1) {
+            confirm('Congratulations you won!! \n Want to try again ?') ? resetGame() : null
+        } else {
+            confirm('You lost! \n Want to try again ?') ? resetGame() : null
+        }
+    },100) // timeout to allow render game
+}
+
+function resetGame() {
+    location.reload();
 }
 
 function addClickHandlers() {
