@@ -75,17 +75,16 @@ function renderMainGrid() {
 function onBoxClick() {
     var rowIdx = this.getAttribute("rowIdx");
     var colIdx = this.getAttribute("colIdx");
-
-    let newValue = 1;
-    grid[colIdx][rowIdx] = newValue;
-    renderMainGrid();
-    addClickHandlers();
-    playMove();
-    // checkGame(1) ? declareWinner(1) : (checkGame(2) ? declareWinner(2) : playMove())
+    if(grid[colIdx][rowIdx] === 0) {
+        let newValue = 1;
+        grid[colIdx][rowIdx] = newValue;
+        renderMainGrid();
+        addClickHandlers();
+        checkGame(1) ? declareWinner(1) : (checkGame(2) ? declareWinner(2) : playMove())
+    }
 }
 
 function playMove() {
-    // console.log('grid', grid);
     let tempGrid = [];
     let stepToWin = null;
     let stepToLoose = null;
@@ -94,9 +93,9 @@ function playMove() {
         tempGrid[x] = [...grid[x]]
     }
     stepToWin = checkMinStepsToWin(tempGrid, 2, 0);
-    // console.log('step to win', stepToWin)
     if(stepToWin === 1) {
         grid[MoveX][MoveY] = 2;
+
     } else {
         winningX = MoveX;
         winningY = MoveY;
@@ -112,6 +111,9 @@ function playMove() {
     }
     renderMainGrid();
     addClickHandlers();
+    if(stepToWin === 1) {
+        declareWinner(2);
+    }
 }
 
 function checkMinStepsToWin(testGrid, player, steps) {
@@ -127,7 +129,6 @@ function checkMinStepsToWin(testGrid, player, steps) {
     for(let x=0; x<3; x++) {
         for(let y=0; y<3; y++) {
             if(tempGrid[x][y] === 0) {
-                mvoePossible = true;
                 tempGrid[x][y] = player;
                 tempMinSteps = checkMinStepsToWin(tempGrid, player, steps);
                 if(tempMinSteps < minSteps) {
@@ -164,12 +165,8 @@ function addClickHandlers() {
     }
 }
 
-function checkGame(player, gridToCheck) {
+function checkGame(player, gridToCheck = grid) {
     let won = false;
-    // let gridToCheck = []
-    // for(let x=0; x<GRID_LENGTH; x++) {
-    //     gridToCheck[x] = [...gridTo[x]]
-    // }
     for(let x=0; x<GRID_LENGTH; x++) {  // check horizontal
         if(won) {
             break;
@@ -201,7 +198,7 @@ function checkGame(player, gridToCheck) {
         return true;
     }
     won = true
-    for(let x=0; x<GRID_LENGTH; x++) { // check diagonal 1
+    for(let x=0; x<GRID_LENGTH; x++) { // check diagonal 1 top left to bottom right
         if( gridToCheck[x][x] !== player ) {
             won = false
             break;
@@ -211,8 +208,8 @@ function checkGame(player, gridToCheck) {
         return true;
     }
     won = true
-    for(let x=0; x<GRID_LENGTH; x++) { // check diagonal 1
-        if( gridToCheck[x][GRID_LENGTH-x] !== player ) {
+    for(let x=0; x<GRID_LENGTH; x++) { // check diagonal 2 top right to bottom left
+        if( gridToCheck[x][GRID_LENGTH-x-1] !== player ) {
             won = false
             break;
         }
