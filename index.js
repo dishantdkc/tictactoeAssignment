@@ -19,7 +19,7 @@
 
 const grid = [];
 const GRID_LENGTH = 3;
-let turn = 'X';
+// let turn = 'X';
 let MoveX = null;
 let MoveY = null;
 
@@ -93,12 +93,14 @@ function playMove() {
         tempGrid[x] = [...grid[x]]
     }
     stepToWin = checkMinStepsToWin(tempGrid, 2, 0);
+    MoveX === null && checkIfDraw() ? declareDraw() : null
     if(stepToWin === 1) {
         grid[MoveX][MoveY] = 2;
 
     } else {
         winningX = MoveX;
         winningY = MoveY;
+        MoveX !== null && winningX === null && checkIfDraw() ? declareDraw() : null
         stepToLoose = checkMinStepsToWin(tempGrid, 1, 0);
         if(stepToLoose === 1) {
             grid[MoveX][MoveY] = 2;
@@ -114,9 +116,23 @@ function playMove() {
     if(stepToWin === 1) {
         declareWinner(2);
     }
-    if(stepToWin > GRID_LENGTH*GRID_LENGTH && stepToLoose > GRID_LENGTH*GRID_LENGTH) {
-        confirm('Oh! the match is Draw \n Want to try again') ? resetGame() : null
+}
+
+function declareDraw() {
+    confirm('Oh! the match is Draw \n Want to try again') ? resetGame() : null
+}
+
+function checkIfDraw() {
+    let draw = true;
+    for(let x=0; x<GRID_LENGTH; x++) {
+        for(let y=0; y<GRID_LENGTH; y++) {
+            if(grid[x][y] === 0) {
+                draw = false;
+                break;
+            }
+        }
     }
+    return draw;
 }
 
 function checkMinStepsToWin(testGrid, player, steps) {
@@ -137,6 +153,10 @@ function checkMinStepsToWin(testGrid, player, steps) {
     for(let x=0; x<GRID_LENGTH; x++) {
         for(let y=0; y<GRID_LENGTH; y++) {
             if(tempGrid[x][y] === 0) {
+                if(moveXTemp === null) {
+                    moveXTemp = x;
+                    moveYTemp = y;
+                }
                 tempGrid[x][y] = player;
                 tempMinSteps = checkMinStepsToWin(tempGrid, player, steps + 1 );
                 if(tempMinSteps < minSteps) {
