@@ -114,6 +114,9 @@ function playMove() {
     if(stepToWin === 1) {
         declareWinner(2);
     }
+    if(stepToWin > GRID_LENGTH*GRID_LENGTH && stepToLoose > GRID_LENGTH*GRID_LENGTH) {
+        confirm('Oh! the match is Draw \n Want to try again') ? resetGame() : null
+    }
 }
 
 function checkMinStepsToWin(testGrid, player, steps) {
